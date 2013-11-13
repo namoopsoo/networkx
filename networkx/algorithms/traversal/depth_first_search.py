@@ -124,7 +124,7 @@ def dfs_labeled_edges(G,source=None):
         yield start,start,{'dir':'reverse'}
 
 
-def dfs_edges_by_label(G,source=None, my_label):
+def dfs_edges_by_label(G,source=None, my_label=None):
     """Produce edges in a depth-first-search starting at source, 
     only following a given label.
 
