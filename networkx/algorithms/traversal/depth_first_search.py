@@ -122,3 +122,43 @@ def dfs_labeled_edges(G,source=None):
                 if stack:
                     yield stack[-1][0],parent,{'dir':'reverse'}
         yield start,start,{'dir':'reverse'}
+
+
+def dfs_edges_by_label(G,source=None, my_label):
+    """Produce edges in a depth-first-search starting at source, 
+    only following a given label.
+
+    my_label : this is a dictionary, specifying an edge label condition to traverse by.
+
+    For example, if edges have been added such as, g.add_edge(a, b, relationship='child')
+    , then use my_label= {'relationship': 'child'} , as a condition for traversal.
+    """
+    if not my_label or my_label == {}:
+        yield nx.dfs_edges(G, source=None)
+    if type(my_label) != type({}):
+        raise SyntaxError, "my_label should be a dictionary"
+    label_, value_ = my_label.items()[0]    
+    if source is None:
+        # produce edges for all components
+        nodes=G
+    else:
+        # produce edges for components with source
+        nodes=[source]
+    visited=set()
+    for start in nodes:
+        if start in visited:
+            continue
+        visited.add(start)
+        stack = [(start,iter(G[start]))]
+        while stack:
+            parent,children = stack[-1]
+            try:
+                child = next(children)
+                if G[parent][child][label_] != value_:
+                    continue
+                if child not in visited:
+                    yield parent,child
+                    visited.add(child)
+                    stack.append((child,iter(G[child])))
+            except StopIteration:
+                stack.pop()
